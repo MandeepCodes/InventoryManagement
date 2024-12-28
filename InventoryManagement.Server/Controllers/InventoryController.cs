@@ -1,24 +1,33 @@
-﻿using InventoryManagement.Server.Modals;
+﻿using InventoryManagement.Server;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InventoryManagement.Server.Controllers
+namespace InventoryManagement.Server
 {
     [ApiController]
     [Route("[controller]/[action]")]
     public class InventoryController : Controller
     {
-        [HttpGet(Name = "GetAllInventory")]
+
+        DatabaseManager databaseManager;
+
+
         public List<Inventory> GetAll()
         {
+            databaseManager = new DatabaseManager();
+
             Inventory inventory = new Inventory();
-            inventory.ClientName = "Harjinder";
+            inventory.ClientName = "lol";
             inventory.InTime = DateTime.Now.AddDays(-1);
             inventory.OutTime = DateTime.Now;
+            inventory.PaymentStatus = true;
+            inventory.PaymentAmount = 140;
+            inventory.ArticleType = "Mobile";
+            inventory.ArticleModel = "Samsung";
+            inventory.Refixed = false;
 
-            List<Inventory> list = new List<Inventory>();
-            list.Add(inventory);
+            databaseManager.AddInventory(inventory);
 
-            return list;
+            return databaseManager.GetAllInventories();
         }
     }
 }

@@ -16,14 +16,24 @@ function App() {
                     <th>Client Name</th>
                     <th>In Time</th>
                     <th>Out Time</th>
+                    <th>Payment Status</th>
+                    <th>Payment Amount</th>
+                    <th>Article Type</th>
+                    <th>Article Model</th>
+                    <th>Refixed</th>
                 </tr>
             </thead>
             <tbody>
-                {inventory.map(item =>
-                    <tr key={item.clientName}>
+                {inventory.map((item, index) =>
+                    <tr key={index}>
                         <td>{item.clientName}</td>
                         <td>{new Date(item.inTime).toLocaleString()}</td>
                         <td>{new Date(item.outTime).toLocaleString()}</td>
+                        <td>{item.paymentStatus ? "Paid" : "Unpaid"}</td>
+                        <td>{item.paymentAmount}</td>
+                        <td>{item.articleType}</td>
+                        <td>{item.articleModel}</td>
+                        <td>{item.refixed ? "Yes" : "No"}</td>
                     </tr>
                 )}
             </tbody>
