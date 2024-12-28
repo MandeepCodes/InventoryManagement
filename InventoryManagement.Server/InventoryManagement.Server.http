@@ -1,0 +1,6 @@
+@InventoryManagement.Server_HostAddress = http://localhost:5231
+
+GET {{InventoryManagement.Server_HostAddress}}/inventory/GetAll
+Accept: application/json
+
+###
