@@ -7,14 +7,26 @@ namespace InventoryManagement.Server
     [Route("[controller]/[action]")]
     public class InventoryController : Controller
     {
+        private DatabaseManager databaseManager;
+        private List<Inventory> inventories;
 
-        DatabaseManager databaseManager;
-
+        public InventoryController()
+        {
+            databaseManager = new DatabaseManager();
+            inventories = new List<Inventory>();
+        }
 
         public List<Inventory> GetAll()
         {
-            databaseManager = new DatabaseManager();
+            if(inventories.Count == 0)
+            {
+                inventories = databaseManager.GetAllInventories();
+            }
+            return inventories;
+        }
 
+        public ActionResult Add()
+        {
             Inventory inventory = new Inventory();
             inventory.ClientName = "lol";
             inventory.InTime = DateTime.Now.AddDays(-1);
@@ -26,8 +38,7 @@ namespace InventoryManagement.Server
             inventory.Refixed = false;
 
             databaseManager.AddInventory(inventory);
-
-            return databaseManager.GetAllInventories();
+            return null;
         }
     }
 }

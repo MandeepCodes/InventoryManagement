@@ -44,6 +44,10 @@ namespace InventoryManagement.Server
             app.MapFallbackToFile("/index.html");
 
             app.Run();
+
+            //
+            // npm install react-router-dom
+
         }
     }
 }

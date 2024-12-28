@@ -1,7 +1,18 @@
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './App.css';
 
-function App() {
+function MainPage() {
+    return (
+        <div>
+            <h1>Air Tech Electronics</h1>
+            <p>Balvinder Singh (c).</p>
+            <Link to="/inventory"> <button className="inventory-button">Go to Inventory Page</button> </Link>
+        </div>
+    );
+}
+
+function InventoryPage() {
     const [inventory, setInventory] = useState();
 
     useEffect(() => {
@@ -56,7 +67,17 @@ function App() {
             console.error("Failed to fetch data", response.status);
         }
     }
+}
 
+function App() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<MainPage />} />
+                <Route path="/inventory" element={<InventoryPage />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
