@@ -56,3 +56,35 @@ tbody tr:hover {
     .inventory-button:hover {
         background-color: #0056b3;
     }
+
+/* New styles for AddInventory and UpdateInventory forms */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+input, button {
+    padding: 0.75rem;
+    margin: 0.5rem;
+    font-size: 1rem;
+}
+
+input {
+    width: 60%;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.25rem;
+}
+
+    button:hover {
+        background-color: #218838;
+    }
