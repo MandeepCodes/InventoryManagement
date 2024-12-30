@@ -57,13 +57,26 @@ namespace InventoryManagement.Server
             using (SQLiteConnection conn = new SQLiteConnection(connString))
             {
                 conn.Open();
-                string sql = $"INSERT INTO records (clientName, inTime, outTime, paymentStatus, paymentAmount, articleType, articleModel, refixed) VALUES ('{inventory.ClientName}', '{inventory.InTime.ToString("yyyy-MM-dd HH:mm:ss")}', '{inventory.OutTime.ToString("yyyy-MM-dd HH:mm:ss")}', '{inventory.PaymentStatus}', {inventory.PaymentAmount}, '{inventory.ArticleType}', '{inventory.ArticleModel}', {inventory.Refixed})";
+                string sql = $"INSERT INTO records (clientName, inTime, articleType, articleModel, accessories, description, articleId) VALUES ('{inventory.ClientName}', '{inventory.InTime.ToString("yyyy-MM-dd HH:mm:ss")}', '{inventory.ArticleType}', '{inventory.ArticleModel}', '{inventory.Accessories}', '{inventory.Description}', '{inventory.ArticleId}')";
                 using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                 {
                     command.ExecuteNonQuery();
                 }
             }
             Inventories.Add(inventory);
+        }
+
+        public void Update(Inventory inventory)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connString))
+            {
+                conn.Open();
+                string sql = $"UPDATE records SET outTime = '{inventory.OutTime.ToString("yyyy-MM-dd HH:mm:ss")}', paymentStatus = '{inventory.PaymentStatus}', paymentAmount = '{inventory.PaymentAmount}', isFixed = '{inventory.IsFixed}' WHERE articleId = '{inventory.ArticleId}'";
+                using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         public List<Inventory> GetAllInventories()
@@ -80,14 +93,17 @@ namespace InventoryManagement.Server
                         {
                             var inventory = new Inventory
                             {
-                                ClientName = reader["clientName"].ToString(),
-                                InTime = DateTime.Parse(reader["inTime"].ToString()),
-                                OutTime = DateTime.Parse(reader["outTime"].ToString()),
-                                PaymentStatus = bool.Parse(reader["paymentStatus"].ToString()),
-                                PaymentAmount = int.Parse(reader["paymentAmount"].ToString()),
-                                ArticleType = reader["articleType"].ToString(),
-                                ArticleModel = reader["articleModel"].ToString(),
-                                Refixed = bool.Parse(reader["refixed"].ToString())
+                                ClientName = reader["clientName"] != DBNull.Value ? reader["clientName"].ToString() : string.Empty,
+                                InTime = reader["inTime"] != DBNull.Value ? DateTime.Parse(reader["inTime"].ToString()) : DateTime.MinValue,
+                                OutTime = reader["outTime"] != DBNull.Value ? DateTime.Parse(reader["outTime"].ToString()) : DateTime.MinValue,
+                                PaymentStatus = reader["paymentStatus"] != DBNull.Value ? bool.Parse(reader["paymentStatus"].ToString()) : (bool)false,
+                                PaymentAmount = reader["paymentAmount"] != DBNull.Value ? int.Parse(reader["paymentAmount"].ToString()) : (int?)null,
+                                ArticleType = reader["articleType"] != DBNull.Value ? reader["articleType"].ToString() : string.Empty,
+                                ArticleModel = reader["articleModel"] != DBNull.Value ? reader["articleModel"].ToString() : string.Empty,
+                                IsFixed = reader["isFixed"] != DBNull.Value ? bool.Parse(reader["isFixed"].ToString()) : (bool)false,
+                                Description = reader["description"] != DBNull.Value ? reader["description"].ToString() : string.Empty,
+                                ArticleId = reader["articleId"] != DBNull.Value ? reader["articleId"].ToString() : null,
+                                Accessories = reader["accessories"] != DBNull.Value ? reader["accessories"].ToString() : string.Empty
                             };
                             inventories.Add(inventory);
                         }
@@ -97,10 +113,28 @@ namespace InventoryManagement.Server
             return inventories;
         }
 
-        public bool removeInventory(Inventory inventory)
+        public string LastArticleId()
         {
-            return Inventories.Remove(inventory);
+            string lastArticleId = "";
+            using (SQLiteConnection conn = new SQLiteConnection(connString))
+            {
+                conn.Open();
+                string sql = "SELECT articleId FROM records ORDER BY id DESC LIMIT 1";
+                using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                {
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lastArticleId = reader["articleId"].ToString();
+                        }
+                    }
+                }
+            }
+            return lastArticleId;
         }
+
+      
 
 
     }

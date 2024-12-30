@@ -4,3 +4,27 @@ GET {{InventoryManagement.Server_HostAddress}}/inventory/GetAll
 Accept: application/json
 
 ###
+
+POST {{InventoryManagement.Server_HostAddress}}/inventory/Add
+Accept: application/json
+Content-Type: application/json
+{
+    "ClientName": "lol3",
+    "ArticleType": "Mobile",
+    "ArticleModel": "Samsung",
+    "Description": "all sensors",
+    "Accessories": "Charger",
+    "ArticleId": "0"
+}
+
+###
+
+POST {{InventoryManagement.Server_HostAddress}}/inventory/Update
+Accept: application/json
+Content-Type: application/json
+{
+    "ArticleId": "zzzzc",
+    "PaymentAmount": "10",
+    "PaymentStatus": true,
+    "IsFixed" : true
+}

@@ -1,5 +1,4 @@
-﻿using InventoryManagement.Server;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.Server
 {
@@ -8,37 +7,59 @@ namespace InventoryManagement.Server
     public class InventoryController : Controller
     {
         private DatabaseManager databaseManager;
-        private List<Inventory> inventories;
 
         public InventoryController()
         {
             databaseManager = new DatabaseManager();
-            inventories = new List<Inventory>();
         }
 
+        /// <summary>
+        /// Get all inventories
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public List<Inventory> GetAll()
         {
-            if(inventories.Count == 0)
-            {
-                inventories = databaseManager.GetAllInventories();
-            }
+            List<Inventory> inventories = databaseManager.GetAllInventories();
             return inventories;
         }
 
-        public ActionResult Add()
+        /// <summary>
+        /// Add new inventory
+        /// When adding new inventory, if ArticleId is 0, then generate new ArticleId
+        /// </summary>
+        /// <param name="inventory"></param>
+        /// <returns>return the generated id on screen to shouw on UI</returns>
+        [HttpPost]
+        public ActionResult Add([FromBody] Inventory inventory)
         {
-            Inventory inventory = new Inventory();
-            inventory.ClientName = "lol";
-            inventory.InTime = DateTime.Now.AddDays(-1);
-            inventory.OutTime = DateTime.Now;
-            inventory.PaymentStatus = true;
-            inventory.PaymentAmount = 140;
-            inventory.ArticleType = "Mobile";
-            inventory.ArticleModel = "Samsung";
-            inventory.Refixed = false;
+            if (inventory == null)
+            {
+                return BadRequest("Inventory data is null");
+            }
 
+            string aid = databaseManager.LastArticleId();
+            if (inventory.ArticleId == "0")
+            {
+                string newAid = Utils.GetNextId(aid);
+                inventory.ArticleId = newAid;
+            }
+
+            // Add current time as InTime
+            inventory.InTime = DateTime.Now;
             databaseManager.AddInventory(inventory);
-            return null;
+            return Ok(inventory.ArticleId);
+        }
+
+        public ActionResult Update([FromBody] Inventory inventory)
+        {
+            if (inventory == null)
+            {
+                return BadRequest("Inventory data is null");
+            }
+            inventory.OutTime = DateTime.Now;
+            databaseManager.Update(inventory);
+            return Ok();
         }
     }
 }
