@@ -80,5 +80,21 @@ namespace InventoryManagement.Server
             // Return status OK
             return Ok();
         }
+
+        /// <summary>
+        /// Delete inventory.
+        /// </summary>
+        /// <param name="articleID"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public ActionResult Delete([FromBody] Inventory inventory)
+        {
+            if (inventory == null)
+            {
+                return BadRequest("Article ID is null");
+            }
+            databaseManager.DeleteInventory(inventory.ArticleId);
+            return Ok();
+        }
     }
 }

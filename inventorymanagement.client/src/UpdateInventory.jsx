@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const UpdateInventory = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const articleId = queryParams.get('articleId');
+
     const [inventory, setInventory] = useState({
-        articleId: '', // Assuming that articleId is required to identify the inventory to update
+        articleId: articleId || '', // Set initial state with articleId if available
         paymentStatus: false,
         paymentAmount: 0,
         isFixed: false
     });
+
+    useEffect(() => {
+        if (articleId) {
+            setInventory(prevState => ({
+                ...prevState,
+                articleId: articleId
+            }));
+        }
+    }, [articleId]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

@@ -14,7 +14,7 @@ Content-Type: application/json
     "ArticleModel": "Samsung",
     "Description": "all sensors",
     "Accessories": "Charger",
-    "ArticleId": "0"
+    "ArticleId": "zzzzc"
 }
 
 ###
@@ -27,4 +27,13 @@ Content-Type: application/json
     "PaymentAmount": "10",
     "PaymentStatus": true,
     "IsFixed" : true
+}
+
+###
+
+DELETE {{InventoryManagement.Server_HostAddress}}/inventory/Delete
+Accept: application/json
+Content-Type: application/json
+{
+    "ArticleId": "zzzzc"
 }

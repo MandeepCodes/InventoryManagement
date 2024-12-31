@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './App.css';
 import AddInventory from './AddInventory';  // Import the AddInventory component
@@ -9,8 +9,8 @@ function MainPage() {
         <div>
             <h1>Air Tech Electronics</h1>
             <p>Balvinder Singh (c).</p>
-            <Link to="/inventory"> <button className="inventory-button">Go to Inventory Page</button> </Link>
             <Link to="/add-inventory"> <button className="add-inventory-button">Add Inventory</button> </Link>
+            <Link to="/inventory"> <button className="inventory-button">Go to Inventory Page</button> </Link>
             <Link to="/update-inventory"> <button className="update-inventory-button">Update Inventory</button> </Link>
         </div>
     );
@@ -20,6 +20,7 @@ function InventoryPage() {
     const [inventory, setInventory] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchInventoryData();
@@ -60,6 +61,26 @@ function InventoryPage() {
         setSortConfig({ key, direction });
     };
 
+    const handleDelete = async (articleId) => {
+        const response = await fetch('https://localhost:7209/Inventory/Delete', {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ArticleId: articleId })
+        });
+        if (response.ok) {
+            setInventory(inventory.filter(item => item.articleId !== articleId));
+        } else {
+            console.error("Failed to delete item", response.status);
+        }
+    };
+
+    const handleUpdate = (articleId) => {
+        navigate(`/update-inventory?articleId=${articleId}`);
+    };
+
     const contents = inventory.length === 0
         ? <p><em>Loading... Please refresh once the ASP.NET backend has started.</em></p>
         : <>
@@ -84,6 +105,7 @@ function InventoryPage() {
                         <th><button type="button" onClick={() => requestSort('isFixed')}>Fixed</button></th>
                         <th><button type="button" onClick={() => requestSort('description')}>Details</button></th>
                         <th><button type="button" onClick={() => requestSort('accessories')}>Accessories</button></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,6 +122,20 @@ function InventoryPage() {
                             <td>{item.isFixed ? "Yes" : "No"}</td>
                             <td>{item.description}</td>
                             <td>{item.accessories}</td>
+                            <td>
+                                <select className="action-dropdown" onChange={(e) => {
+                                    if (e.target.value === 'delete') {
+                                        handleDelete(item.articleId);
+                                    } else if (e.target.value === 'update') {
+                                        handleUpdate(item.articleId);
+                                    }
+                                    e.target.value = '';  // Reset dropdown
+                                }}>
+                                    <option value="">Select</option>
+                                    <option value="delete">Delete</option>
+                                    <option value="update">Update</option>
+                                </select>
+                            </td>
                         </tr>
                     )}
                 </tbody>

@@ -146,5 +146,18 @@ namespace InventoryManagement.Server
             }
             return lastArticleId;
         }
+
+        public void DeleteInventory(string articleId)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connString))
+            {
+                conn.Open();
+                string sql = $"DELETE FROM records WHERE articleId = '{articleId}'";
+                using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
