@@ -10,10 +10,10 @@ const UpdateInventory = () => {
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setInventory({
             ...inventory,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         });
     };
 
@@ -28,16 +28,82 @@ const UpdateInventory = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input name="articleId" value={inventory.articleId} onChange={handleChange} placeholder="Article ID" />
-            <input name="paymentStatus" type="checkbox" checked={inventory.paymentStatus} onChange={handleChange} />
-            <label>Payment Status</label>
-            <input name="paymentAmount" value={inventory.paymentAmount} onChange={handleChange} placeholder="Payment Amount" />
-            <input name="isFixed" type="checkbox" checked={inventory.isFixed} onChange={handleChange} />
-            <label>Is Fixed</label>
-            <button type="submit">Update Inventory</button>
+        <form onSubmit={handleSubmit} style={formStyle}>
+            <input
+                name="articleId"
+                value={inventory.articleId}
+                onChange={handleChange}
+                placeholder="Article ID"
+                style={inputStyle}
+            />
+            <div style={sliderContainerStyle}>
+                <label>Payment Status</label>
+                <label className="switch">
+                    <input
+                        name="paymentStatus"
+                        type="checkbox"
+                        checked={inventory.paymentStatus}
+                        onChange={handleChange}
+                    />
+                    <span className="slider round"></span>
+                </label>
+            </div>
+            <input
+                name="paymentAmount"
+                value={inventory.paymentAmount}
+                onChange={handleChange}
+                placeholder="Payment Amount"
+                style={inputStyle}
+            />
+            <div style={sliderContainerStyle}>
+                <label>Is Fixed</label>
+                <label className="switch">
+                    <input
+                        name="isFixed"
+                        type="checkbox"
+                        checked={inventory.isFixed}
+                        onChange={handleChange}
+                    />
+                    <span className="slider round"></span>
+                </label>
+            </div>
+            <button type="submit" style={buttonStyle}>Update Inventory</button>
         </form>
     );
+};
+
+const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: '2rem'
+};
+
+const inputStyle = {
+    width: '80%',
+    padding: '0.75rem',
+    margin: '0.5rem 0',
+    fontSize: '1rem',
+    border: '1px solid #ddd',
+    borderRadius: '0.25rem'
+};
+
+const buttonStyle = {
+    padding: '0.75rem 1.5rem',
+    fontSize: '1rem',
+    backgroundColor: '#28a745',
+    color: 'white',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '0.25rem'
+};
+
+const sliderContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%',
+    margin: '0.5rem 0'
 };
 
 export default UpdateInventory;
