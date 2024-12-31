@@ -17,48 +17,94 @@ function MainPage() {
 }
 
 function InventoryPage() {
-    const [inventory, setInventory] = useState();
+    const [inventory, setInventory] = useState([]);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchInventoryData();
     }, []);
 
-    const contents = inventory === undefined
+    const sortedInventory = () => {
+        let sortableItems = [...inventory];
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableItems;
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const filteredInventory = sortedInventory().filter(item => {
+        return (
+            item.articleId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.clientName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    });
+
+    const requestSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const contents = inventory.length === 0
         ? <p><em>Loading... Please refresh once the ASP.NET backend has started.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Client Name</th>
-                    <th>In Time</th>
-                    <th>Out Time</th>
-                    <th>Payment Status</th>
-                    <th>Payment Amount</th>
-                    <th>Article Type</th>
-                    <th>Article Model</th>
-                    <th>Fixed</th>
-                    <th>Details</th>
-                    <th>Accessories</th>
-                </tr>
-            </thead>
-            <tbody>
-                {inventory.map((item, index) =>
-                    <tr key={index}>
-                        <td>{item.articleId}</td>
-                        <td>{item.clientName}</td>
-                        <td>{new Date(item.inTime).toLocaleString()}</td>
-                        <td>{new Date(item.outTime).toLocaleString()}</td>
-                        <td>{item.paymentStatus ? "Paid" : "Unpaid"}</td>
-                        <td>{item.paymentAmount}</td>
-                        <td>{item.articleType}</td>
-                        <td>{item.articleModel}</td>
-                        <td>{item.isFixed ? "Yes" : "No"}</td>
-                        <td>{item.description}</td>
-                        <td>{item.accessories}</td>
+        : <>
+            <input
+                type="text"
+                placeholder="Search by Article ID or Client Name"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                style={searchBarStyle}
+            />
+            <table className="table table-striped" aria-labelledby="tableLabel">
+                <thead>
+                    <tr>
+                        <th><button type="button" onClick={() => requestSort('articleId')}>ID</button></th>
+                        <th><button type="button" onClick={() => requestSort('clientName')}>Client Name</button></th>
+                        <th><button type="button" onClick={() => requestSort('inTime')}>In Time</button></th>
+                        <th><button type="button" onClick={() => requestSort('outTime')}>Out Time</button></th>
+                        <th><button type="button" onClick={() => requestSort('paymentStatus')}>Payment Status</button></th>
+                        <th><button type="button" onClick={() => requestSort('paymentAmount')}>Payment Amount</button></th>
+                        <th><button type="button" onClick={() => requestSort('articleType')}>Article Type</button></th>
+                        <th><button type="button" onClick={() => requestSort('articleModel')}>Article Model</button></th>
+                        <th><button type="button" onClick={() => requestSort('isFixed')}>Fixed</button></th>
+                        <th><button type="button" onClick={() => requestSort('description')}>Details</button></th>
+                        <th><button type="button" onClick={() => requestSort('accessories')}>Accessories</button></th>
                     </tr>
-                )}
-            </tbody>
-        </table>;
+                </thead>
+                <tbody>
+                    {filteredInventory.map((item, index) =>
+                        <tr key={index}>
+                            <td>{item.articleId}</td>
+                            <td>{item.clientName}</td>
+                            <td>{new Date(item.inTime).toLocaleString()}</td>
+                            <td>{new Date(item.outTime).toLocaleString()}</td>
+                            <td>{item.paymentStatus ? "Paid" : "Unpaid"}</td>
+                            <td>{item.paymentAmount}</td>
+                            <td>{item.articleType}</td>
+                            <td>{item.articleModel}</td>
+                            <td>{item.isFixed ? "Yes" : "No"}</td>
+                            <td>{item.description}</td>
+                            <td>{item.accessories}</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </>;
 
     return (
         <div>
@@ -78,6 +124,15 @@ function InventoryPage() {
         }
     }
 }
+
+const searchBarStyle = {
+    width: '80%',
+    padding: '0.75rem',
+    margin: '1rem 0',
+    fontSize: '1rem',
+    border: '1px solid #ddd',
+    borderRadius: '0.25rem'
+};
 
 function App() {
     return (
